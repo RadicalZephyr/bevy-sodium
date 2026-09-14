@@ -1,14 +1,11 @@
-pub fn add(left: u64, right: u64) -> u64 {
-    left + right
-}
+use bevy::prelude::*;
 
-#[cfg(test)]
-mod tests {
-    use super::*;
+/// The entity that this entity depends on.
+#[derive(Component, Debug)]
+#[relationship(relationship_target = DependedOnBy)]
+struct DependsOn(Entity);
 
-    #[test]
-    fn it_works() {
-        let result = add(2, 2);
-        assert_eq!(result, 4);
-    }
-}
+/// All entities that depend on this entity.
+#[derive(Component, Debug)]
+#[relationship_target(relationship = DependsOn)]
+struct DependedOnBy(Vec<Entity>);
