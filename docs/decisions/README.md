@@ -156,11 +156,24 @@ Which of the two homes it gets is decided by what it depends on:
 
 | The experiment needs | It lives in |
 | --- | --- |
-| this project's code | the sub-project in [`experiments/`](experiments/), as an entry point named after the record |
-| only the language's toolchain and standard library | a share link on the playground, with the source in the ADR |
+| this crate, or any dependency the playground does not carry | the sub-project in [`experiments/`](experiments/), as an entry point named after the record |
+| only the toolchain, the standard library, and crates the playground does carry | a share link on the playground, with the source in the ADR |
 
-The split enforces itself in one direction: a playground cannot depend on this
-project, so anything that fits in one is necessarily a minimal reproduction. It
+The second row was once "only the toolchain and the standard library". It was
+widened the first time an experiment needed neither this crate nor nothing:
+comparing `bevy` against `bevy` plus `sodium-rust` needs two third-party crates
+and none of our own, and under the narrow rule it routed nowhere. The test is
+what a reader can actually re-run, so the question is whether the playground
+carries the dependency, not whose code it is.
+
+**Which crates those are is a fact about someone else's service, and it moves.**
+The Rust Playground ships a fixed crate set that is revised periodically, so a
+record routing an experiment to it should say when that was checked -- the same
+rule as any other third-party capability below.
+
+The split still enforces itself in one direction: a playground cannot depend on
+this project, so anything that fits in one is necessarily a minimal
+reproduction. It
 is also the only route open to a build-time experiment -- a case that must
 *fail* to compile or type-check cannot live in the sub-project, because a
 sub-project that does not build breaks the project's build. A project with no

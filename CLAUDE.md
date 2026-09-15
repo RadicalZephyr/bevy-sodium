@@ -160,12 +160,14 @@ be committed somewhere a reader can run it** -- a number quoted in an ADR has to
 be re-derivable from a checkout, or the record is asserting rather than arguing.
 Which of two homes depends on what the experiment needs:
 
-- **Needs this project's code** → the sub-project at
+- **Needs this crate, or any dependency the playground does not carry** → the
+  sub-project at
   [`docs/decisions/experiments/`](docs/decisions/experiments/), as an entry
   point named after the record (`0001-some-decision`), run with the command its
   README names. A dependency added there goes through the same checks as the
   rest of the repository; not publishing it is no reason to skip that.
-- **Needs only the language's toolchain and standard library** → a share link
+- **Needs only the toolchain, the standard library, and crates the playground
+  does carry** → a share link
   on the playground named in `docs/decisions/README.md`, recorded in the ADR.
   This is also the only route for a build-time experiment: a case that must
   *fail* to compile or type-check cannot be an experiment entry point, because
