@@ -187,6 +187,15 @@ routing table, what a playground has to provide to qualify, and what a project
 with none does instead; [`experiments/README.md`](../experiments/README.md) has
 the retirement rule.
 
+> **2026-09-15 (after the decision):** the routing rule as stated above was
+> two-way -- this project's code, or the toolchain and standard library. The
+> first experiment to exercise it fell between: comparing `bevy` against `bevy`
+> plus `sodium-rust` needs two third-party crates and none of ours, so it routed
+> nowhere. [`README.md`](../README.md) now routes on whether the playground
+> carries the dependency rather than on whose code it is. The argument below is
+> unaffected -- it was always about what a reader can re-run, and the narrow
+> phrasing was a proxy for that rather than the point.
+
 Two things about that arrangement are decisions rather than mechanics.
 
 **The playground constraint is a feature.** A playground cannot depend on this

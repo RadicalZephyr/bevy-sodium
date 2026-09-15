@@ -46,11 +46,11 @@ Research produces *evidence*, not tests. It is not asserting that the project
 is correct, and it is not expected to keep passing -- it answers a question
 that was open at the time an ADR was written.
 
-An experiment that needs nothing from this project does not belong here either.
-If it depends only on the language's toolchain and standard library -- a probe
-into type inference, a diagnostic worth quoting -- it goes in a playground share
-link recorded in the ADR instead, which is also the only route available to a
-case that has to *fail* to build. That holds while
+An experiment the playground could host does not belong here either. If it
+depends only on the toolchain, the standard library and crates the playground
+carries -- a probe into type inference, a diagnostic worth quoting -- it goes
+in a playground share link recorded in the ADR instead, which is also the only
+route available to a case that has to *fail* to build. That holds while
 [`../README.md`](../README.md) names a playground; where it names none, a
 toolchain-only experiment that builds lives here after all, and a case that has
 to *fail* to build is recorded in the ADR with no link. The same file has the

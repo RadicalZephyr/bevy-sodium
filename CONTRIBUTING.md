@@ -77,8 +77,10 @@ committed somewhere a reader can run it -- a number quoted in an ADR has to be
 re-derivable from a checkout, or the record is asserting rather than arguing.
 An experiment needing this project's code goes in the sub-project at
 [`docs/decisions/experiments/`](docs/decisions/experiments/) as an entry point
-named after the record; one needing only the language's toolchain and standard
-library goes in a playground share link recorded in the ADR.
+named after the record; one needing only the toolchain, the standard library
+and crates the playground carries goes in a playground share link recorded in
+the ADR. Anything needing this crate, or a dependency the playground does not
+carry, goes in the sub-project.
 [`docs/decisions/README.md`](docs/decisions/README.md#what-the-playground-has-to-be)
 names the playground and says what one has to provide. Where it names none,
 everything that builds goes in the sub-project, and a case that has to *fail*
