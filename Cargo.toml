@@ -3,5 +3,8 @@ name = "bevy-sodium"
 version = "0.1.0"
 edition = "2024"
 
+[workspace]
+members = ["docs/decisions/experiments"]
+
 [dependencies]
 bevy = { version = "0.19.1", default-features = false }

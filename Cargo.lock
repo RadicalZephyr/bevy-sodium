@@ -3,6 +3,13 @@
 version = 4
 
 [[package]]
+name = "adr-research"
+version = "0.1.0"
+dependencies = [
+ "bevy-sodium",
+]
+
+[[package]]
 name = "android-activity"
 version = "0.6.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
