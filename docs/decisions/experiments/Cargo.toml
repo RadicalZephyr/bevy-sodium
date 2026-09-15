@@ -6,3 +6,7 @@ publish = false
 
 [dependencies]
 bevy-sodium = { path = "../../.." }
+
+# 0003: the paired build. bevy is the incumbent arm, sodium-rust the FRP arm.
+bevy = { version = "0.19.1", default-features = false }
+sodium-rust = "2.1.3"
