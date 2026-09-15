@@ -39,6 +39,16 @@ own implementations keep an explicit graph of nodes and hand-manage its
 invariants; here the World is the graph, and the queries, change detection and
 scheduling that Bevy already has are what walks it.
 
+What is being ported is written down. Sodium's formal specification -- sixteen
+primitives, their semantic definitions in Haskell, and worked timing diagrams
+for each -- is in the tree at
+[`docs/reference/sodium/denotational-semantics.md`](docs/reference/sodium/denotational-semantics.md).
+It is the authority on what a stream or a cell *means*, so check it rather than
+reasoning from the name of a combinator, and note that the half it does not
+constrain -- how any of it is spelled against an ECS -- is the half every
+decision in `docs/decisions/` is about. It is copied from upstream under its own
+licence; do not edit it to match the implementation.
+
 Read the crate with that in mind and everything currently in it is one edge
 type:
 
@@ -217,7 +227,11 @@ that the implementation diverges from *Sodium's semantics* is not arguing for a
 design -- it is a bug report against a specification this project does not own.
 That record does get a test, because the objection above does not apply: it is
 written against the specification rather than against the internals the record
-replaces, so it is already correct when the gap closes.
+replaces, so it is already correct when the gap closes. The specification is in
+the tree at
+[`docs/reference/sodium/denotational-semantics.md`](docs/reference/sodium/denotational-semantics.md);
+read the relevant section before asserting a divergence, and cite it in the
+test's reason.
 
 Put it in `src/tests.rs`, never in `docs/decisions/experiments/`, write it as
 the behaviour the library *ought* to have so that it fails, and mark it

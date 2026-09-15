@@ -276,11 +276,11 @@ A record arguing that the implementation *diverges from Sodium's semantics* is
 not a preference. It is a bug report against a specification this project does
 not own, and it is the one case that **does** get a test:
 
-- **Written against the specification, not against the internals.** This is the
-  whole reason it survives where a design-motivating test does not. The
-  internals are what a record proposes to replace; the semantics are what
-  outlives the replacement, so the test is already correct on the day the gap
-  closes.
+- **Written against the specification, not against the internals**, and citing
+  the section of it that the implementation misses. This is the whole reason it
+  survives where a design-motivating test does not. The internals are what a
+  record proposes to replace; the semantics are what outlives the replacement,
+  so the test is already correct on the day the gap closes.
 - **In `src/tests.rs`**, never in [`experiments/`](experiments/). It is not
   research, it has no scheduled exit, and it is meant to outlive the record
   that prompted it.
@@ -293,10 +293,14 @@ not own, and it is the one case that **does** get a test:
   trust: a record claiming implementation while its test is still ignored is
   visibly wrong.
 
-Sodium's semantics are fixed by the reference implementations under
-[SodiumFRP](https://github.com/SodiumFRP) and the book they accompany.
+Sodium's semantics are fixed by
+[`docs/reference/sodium/denotational-semantics.md`](../reference/sodium/denotational-semantics.md),
+which is in the tree for this reason: a record claiming divergence has to cite
+the thing it diverges from, by section. That document is the specification, the
+reference implementations under [SodiumFRP](https://github.com/SodiumFRP) are
+what it describes, and
 [`sodium-rust`](https://github.com/RadicalZephyr/sodium-rust) is the closest
-sibling, and the repository these conventions were extracted from.
+sibling and the repository these conventions were extracted from.
 
 **A difference is not automatically a gap.** [`README.md`](../../README.md)
 calls this a *conceptual* port, so some divergence from Sodium is intended. A
