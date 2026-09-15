@@ -59,15 +59,15 @@ them lives, and the one narrow case in which a decision brings a test.
 
 ## Licence
 
-BSD 3-Clause, in [`LICENSE`](LICENSE) -- the same licence `sodium-rust` and the
-other Sodium ports carry, so that a port is under the same terms as the thing it
-ports.
+Dual-licensed under [MIT](LICENSE-MIT) or [Apache-2.0](LICENSE-APACHE), at your
+option. These are the terms Bevy itself carries, chosen so that nothing about
+this repository's licensing blocks code moving upstream into Bevy later --
+relicensing is free with one contributor and expensive with twenty.
 
-One directory is **not** covered by it.
+One directory is **not** covered by them.
 [`docs/reference/sodium/`](docs/reference/sodium/) holds material copied from
-upstream Sodium, under its own BSD 3-clause licence (Copyright (c) 2015, Stephen
-Blackheath) in
+upstream Sodium under its own BSD 3-clause licence (Copyright (c) 2015, Stephen
+Blackheath), in
 [`docs/reference/sodium/LICENSE`](docs/reference/sodium/LICENSE). The carve-out
-lives here rather than as a preamble inside `LICENSE` so that the licence file
-stays a byte-exact BSD 3-Clause: upstream Sodium's own root `COPYING` takes the
-preamble approach, and GitHub reports it as no recognised license.
+is stated here rather than inside the licence files so those stay byte-exact and
+machine-detectable.
