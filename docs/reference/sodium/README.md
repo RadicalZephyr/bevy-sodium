@@ -2,8 +2,9 @@
 
 Everything in this directory is **copied from upstream Sodium**, not written
 here, and is covered by the BSD 3-clause licence in [`LICENSE`](LICENSE)
-(Copyright (c) 2015, Stephen Blackheath) rather than by whatever this
-repository is under.
+(Copyright (c) 2015, Stephen Blackheath) rather than by the repository's own
+[`LICENSE`](../../../LICENSE) at the root. Both are BSD 3-clause; the copyright
+holders differ, which is the whole reason this directory carries its own.
 
 | File | What it is |
 | --- | --- |
