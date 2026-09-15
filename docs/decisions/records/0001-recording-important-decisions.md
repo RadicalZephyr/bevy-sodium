@@ -217,6 +217,9 @@ single word, and whoever re-records it on the older release commits that
 wording in a diff nobody looks at twice. Without a version stamp, a reader
 cannot tell whether the toolchain moved or the record was always wrong.
 
+*Except where the subject came from outside*, below, carries this record's
+worked instance of all four parts.
+
 ## Tests are not evidence
 
 A decision arguing for different internals does **not** bring tests with it. Such
@@ -224,6 +227,79 @@ a test is written against the structure the record exists to replace, so landing
 the change means rewriting it: it guarded nothing and only enlarged the diff. The
 existing suite is what checks that behaviour did not change while the internals
 did; the argument for changing them belongs in an experiment.
+
+### Except where the subject came from outside
+
+There is exactly one exception, and it is the one a port cannot do without.
+
+Everything above turns on a record's subject being something this project chose
+and is free to re-choose. A port has a second kind of subject. Sodium's
+semantics came from outside, and no record here is entitled to change them, so a
+record arguing that our operational semantics diverge from Sodium's
+denotational ones is not arguing for a design -- it is reporting a bug against a
+specification. The objection that sank tests for design records simply does not
+reach it: such a test is written against the specification, so it is not written
+against anything the record proposes to replace, and it is already correct on
+the day the gap closes. Rewriting it is not deferred, it is never owed.
+
+So that record brings a test. It goes in `src/tests.rs`, marked
+`#[ignore = "ADR-NNNN: ..."]`, and it is written as the behaviour the library
+*ought* to have -- which means it fails, and is supposed to.
+
+`#[ignore]` was chosen over a quarantine module or a `should_panic` for a
+property of the harness rather than a matter of taste: the reason string prints
+on every ordinary test run, so a gap advertises itself without anyone
+remembering to pass `--ignored`. A quarantine module is silent unless someone
+opens it, and `should_panic` asserts that the bug is *correct*, which is the
+opposite claim and goes green the day the gap closes.
+
+**Experiment -- an `#[ignore]` reason prints on an ordinary test run**
+
+```rust
+#[test]
+#[ignore = "ADR-0007: switch_c ought to take the inner cell's value in the same transaction"]
+fn switch_c_simultaneous() {
+    assert_eq!(1, 2);
+}
+```
+
+```text
+test switch_c_simultaneous ... ignored, ADR-0007: switch_c ought to take the inner cell's value in the same transaction
+```
+
+> rustc 1.98.1 (released 2026-09-01) - output checked 2026-09-14 - [Rust Playground](https://play.rust-lang.org/?version=stable&mode=debug&edition=2024&gist=bb1bc640d9a67866d8c90f369972da57)
+
+That is also this repository's first worked instance of the four-part shape the
+*Evidence* section argues for, which is the other reason it is spelled out here
+rather than summarised. The snippet is carried over from `sodium-rust`, where
+`ADR-0007` is a real record -- nothing here numbers that high yet. It
+demonstrates a property of the test harness, not a gap in this library, and it
+is reused rather than re-minted precisely because a link is minted to publish
+what already happened.
+
+The payoff is two-sided. A known gap advertises itself in normal output while
+CI stays green, and landing the fix deletes one attribute line rather than
+rewriting a test. And the attribute coming off is a claim made somewhere CI can
+contradict it: `Implemented` is a row a human types, so a record whose gap test
+is still ignored has not been implemented whatever its log says. That
+disagreement is mechanical rather than a matter of anyone's diligence -- the
+same reason the status log exists at all, applied one level down.
+
+The cost is real and belongs here rather than in a footnote. A growing set of
+ignored tests is a backlog that is easy to stop seeing, and `ignored` in a green
+run is far quieter than red. We are taking that trade deliberately: the
+alternative is CI red on a gap nobody has committed to closing, which does not
+make the backlog visible, it trains everyone to stop reading CI. A quiet backlog
+that can be listed on demand beats a loud one that gets filtered out.
+
+What the exception must not become is a second route for design preferences. It
+is available only where the claim is *this does not match Sodium*, never where
+the claim is *this would be better shaped differently*. Because this is a
+**conceptual** port, that boundary needs stating rather than assuming: some
+divergence from Sodium is intended here, and an intended divergence is a
+decision with a record, not a gap with a test. Sorting a difference into one or
+the other is itself a decision, and doing it before the test is written is what
+keeps the exception narrow.
 
 ## Alternatives considered
 

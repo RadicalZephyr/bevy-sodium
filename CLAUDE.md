@@ -14,6 +14,7 @@ sub-project is a member, and leaving it out silently skips it.
 | Lint | `cargo clippy --workspace --all-targets` |
 | Format | `cargo fmt --all` (`--check` to verify) |
 | Test | `cargo test --workspace` |
+| Known gaps | `cargo test --workspace -- --include-ignored` |
 | One test | `cargo test -p bevy-sodium NAME` -- add `-- --exact` for a whole path rather than a substring |
 | Run an experiment | `cargo run -p adr-research --bin NNNN-record-name` |
 
@@ -210,6 +211,29 @@ an ADR exists to replace has to be rewritten when the change lands: it guarded
 nothing and only enlarged the diff. Support the argument with an experiment in
 `docs/decisions/experiments/`, and let the existing suite keep checking that
 behaviour did not change while the internals did.
+
+**One exception, and it is the one this project hits most.** A record arguing
+that the implementation diverges from *Sodium's semantics* is not arguing for a
+design -- it is a bug report against a specification this project does not own.
+That record does get a test, because the objection above does not apply: it is
+written against the specification rather than against the internals the record
+replaces, so it is already correct when the gap closes.
+
+Put it in `src/tests.rs`, never in `docs/decisions/experiments/`, write it as
+the behaviour the library *ought* to have so that it fails, and mark it
+`#[ignore = "ADR-NNNN: one line"]`. The suite stays green, the reason prints on
+every run -- the reason the attribute beats a quarantine module or a
+`should_panic` -- and `cargo test --workspace -- --include-ignored` runs the
+gaps. **Take the `#[ignore]` off in the pull request that closes the
+gap**, the same one that logs `Implemented` -- that is what keeps the row
+honest, so never log `Implemented` while the record's test is still ignored.
+
+The test is only for divergence we mean to *close*. This is a conceptual port,
+so a divergence we mean to keep is a decision and gets a record saying so
+instead. Sorting the difference into one or the other comes before writing
+either.
+[`docs/decisions/README.md`](docs/decisions/README.md#the-one-exception-a-known-gap-against-sodiums-semantics)
+owns the rule.
 
 [`CONTRIBUTING.md`](CONTRIBUTING.md) states this for human contributors, and
 carries process that never appears here. Read it before changing how anything

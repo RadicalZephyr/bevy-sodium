@@ -13,6 +13,7 @@ cargo build --workspace
 cargo clippy --workspace --all-targets
 cargo fmt --all --check
 cargo test --workspace
+cargo test --workspace -- --include-ignored  # known gaps; see below
 ```
 
 `bevy` is depended on with `default-features = false`. That is a decision, not
@@ -129,3 +130,38 @@ Research is evidence, not a test. It is not expected to keep passing, and it
 has a scheduled exit:
 [`docs/decisions/experiments/README.md`](docs/decisions/experiments/README.md#retirement)
 says when and where it goes.
+
+### Except a known gap against Sodium's semantics
+
+There is one exception, and a port cannot do without it. Everything above
+assumes a record is arguing about something we chose and can re-choose. Sodium's
+semantics are not that -- they come from outside, and a record saying the
+implementation does not match them is reporting a bug against a specification
+rather than arguing for a design.
+
+That record **does** bring a test, because the objection to the others does not
+apply to it: the test is written against the specification, not against the
+internals the record wants to replace, so it is already correct on the day the
+gap closes. Put it in `src/tests.rs`, never in `experiments/`, write it as the
+behaviour the library *ought* to have so that it fails, and mark it:
+
+```rust
+#[test]
+#[ignore = "ADR-0002: merge does not yet preserve simultaneous-event order"]
+fn merge_preserves_simultaneity() { /* written against Sodium, not us */ }
+```
+
+The suite stays green and the reason prints on every run, which is why the
+attribute beats a quarantine module nobody opens or a `should_panic` that
+asserts the bug is correct. `cargo test --workspace -- --include-ignored` runs
+the gaps, which is how you find one that has quietly closed. **The `#[ignore]`
+comes off in the pull request that closes the gap** -- the same one that logs
+`Implemented` -- which is what makes that row checkable rather than taken on
+trust.
+
+A difference from Sodium is not automatically a gap. This is a *conceptual*
+port, so some divergence is intended: one we mean to keep is a decision and gets
+a record saying so, one we mean to close is a gap and gets the ignored test.
+Settle which before writing it.
+[`docs/decisions/README.md`](docs/decisions/README.md#the-one-exception-a-known-gap-against-sodiums-semantics)
+owns this rule and carries the argument.

@@ -258,3 +258,59 @@ Research is evidence, not a test. An ADR arguing for different internals should
 not bring tests with it -- they would be written against the structure the
 record exists to replace. See
 [`CONTRIBUTING.md`](../../CONTRIBUTING.md#tests-and-research-are-not-the-same-thing).
+
+### The one exception: a known gap against Sodium's semantics
+
+bevy-sodium is a port, and
+[`records/0001`](records/0001-recording-important-decisions.md) draws the line a
+port needs: **Sodium's semantics come from outside and are not ours to choose;
+how they are spelled against an ECS is entirely ours.** That line decides
+whether a record brings a test.
+
+A record arguing for a different *spelling* -- fan-in as several relationship
+types or as an entity per edge, a cell as a component or as a resource -- is a
+design preference, and the rule above holds: no test, an experiment where it
+needs evidence.
+
+A record arguing that the implementation *diverges from Sodium's semantics* is
+not a preference. It is a bug report against a specification this project does
+not own, and it is the one case that **does** get a test:
+
+- **Written against the specification, not against the internals.** This is the
+  whole reason it survives where a design-motivating test does not. The
+  internals are what a record proposes to replace; the semantics are what
+  outlives the replacement, so the test is already correct on the day the gap
+  closes.
+- **In `src/tests.rs`**, never in [`experiments/`](experiments/). It is not
+  research, it has no scheduled exit, and it is meant to outlive the record
+  that prompted it.
+- **Marked `#[ignore = "ADR-NNNN: one line"]`** and written as the behaviour
+  the library *ought* to have, so it fails and is supposed to. The suite stays
+  green while the reason prints on every ordinary run -- which is why the
+  attribute is preferred to a quarantine module or a `should_panic`.
+- **Un-ignored by the pull request that closes the gap** -- the same one that
+  logs `Implemented`. That is what makes the row checkable instead of taken on
+  trust: a record claiming implementation while its test is still ignored is
+  visibly wrong.
+
+Sodium's semantics are fixed by the reference implementations under
+[SodiumFRP](https://github.com/SodiumFRP) and the book they accompany.
+[`sodium-rust`](https://github.com/RadicalZephyr/sodium-rust) is the closest
+sibling, and the repository these conventions were extracted from.
+
+**A difference is not automatically a gap.** [`README.md`](../../README.md)
+calls this a *conceptual* port, so some divergence from Sodium is intended. A
+divergence we mean to keep is a decision and gets a record saying so; a known
+gap is a divergence we mean to close. Which one a difference is gets settled
+before the test is written, not after.
+
+The convention is worth nothing if nobody sees the gaps, so both halves are
+plain `cargo`:
+
+```shell
+cargo test --workspace                       # gaps print their reason, suite green
+cargo test --workspace -- --include-ignored  # run them, to find one that has closed
+```
+
+[`records/0001`](records/0001-recording-important-decisions.md#except-where-the-subject-came-from-outside)
+argues for all of this and carries the experiment the first claim rests on.
