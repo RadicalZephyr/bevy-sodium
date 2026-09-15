@@ -1,5 +1,38 @@
 # Contributing
 
+## Building and checking
+
+Everything runs from the repository root, and every command takes `--workspace`.
+The experiments sub-project under
+[`docs/decisions/experiments/`](docs/decisions/experiments/) is a workspace
+member, and a command without `--workspace` skips it without saying so -- which
+is how an experiment rots while the checks stay green.
+
+```shell
+cargo build --workspace
+cargo clippy --workspace --all-targets
+cargo fmt --all --check
+cargo test --workspace
+```
+
+`bevy` is depended on with `default-features = false`. That is a decision, not
+an accident: this crate models a dataflow graph in the ECS and needs none of the
+renderer, windowing or asset stack, so it pays for none of them. Turn a feature
+on when something actually needs it, one at a time, and say so in the commit --
+a cold build is the cost everyone else pays.
+
+## Working in the ECS
+
+`DependsOn` and `DependedOnBy` are a Bevy relationship pair, and only one half
+of it is writable. `DependsOn` is the `Relationship` and the source of truth;
+`DependedOnBy` is the `RelationshipTarget`, maintained for you by Bevy's
+component hooks whenever a `DependsOn` is inserted, changed or removed.
+
+**Make an edge by inserting `DependsOn`, and never write `DependedOnBy`
+directly.** Writing the derived half desynchronises the pair, and Bevy's derive
+keeps the collection field private specifically to stop it. The same rule
+applies to any relationship pair added later.
+
 ## Architecture decision records
 
 Decisions whose *reasoning* is the valuable part get a record in

@@ -3,6 +3,79 @@
 This file provides guidance to Claude Code (claude.ai/code) when working with
 code in this repository.
 
+## Commands
+
+Everything runs from the repository root. `--workspace` matters: the experiments
+sub-project is a member, and leaving it out silently skips it.
+
+| Task | Command |
+| --- | --- |
+| Build | `cargo build --workspace` |
+| Lint | `cargo clippy --workspace --all-targets` |
+| Format | `cargo fmt --all` (`--check` to verify) |
+| Test | `cargo test --workspace` |
+| One test | `cargo test -p bevy-sodium NAME` -- add `-- --exact` for a whole path rather than a substring |
+| Run an experiment | `cargo run -p adr-research --bin NNNN-record-name` |
+
+`bevy` is depended on with `default-features = false`. It is a deliberate
+choice, not an oversight: this crate models a dataflow graph in the ECS and
+needs none of the renderer, windowing or asset stack, so it pays for none of
+them. Reach for a feature when something here actually needs it, one at a time,
+and expect the cold build to grow. The first build of the day compiles `bevy`
+either way and is not quick; everything after it is incremental.
+
+There is no binary and no example -- `bevy-sodium` is a library, so there is
+nothing to `cargo run` in the root crate.
+
+## Architecture
+
+The premise, from [`README.md`](README.md), is a conceptual port of the
+[Sodium](https://github.com/SodiumFRP) FRP library to Bevy. The bet that makes
+it more than a translation is in [`src/lib.rs`](src/lib.rs): **the FRP
+dependency graph is not a data structure the library owns, it is the ECS.** A
+node is an entity, and an edge between nodes is a Bevy relationship. Sodium's
+own implementations keep an explicit graph of nodes and hand-manage its
+invariants; here the World is the graph, and the queries, change detection and
+scheduling that Bevy already has are what walks it.
+
+Read the crate with that in mind and everything currently in it is one edge
+type:
+
+- `DependsOn(Entity)` sits on the **dependent** node and names what it reads
+  from. It is a Bevy `Relationship`, so it is the source of truth.
+- `DependedOnBy(Vec<Entity>)` sits on the **depended-upon** node and collects
+  every dependent. It is the `RelationshipTarget`, which means Bevy's component
+  hooks insert, update and remove it automatically whenever a `DependsOn` moves.
+
+**Never write `DependedOnBy` by hand.** Inserting `DependsOn` is the only
+supported way to make an edge, and the target side is derived from it. Mutating
+the derived side directly desynchronises the pair, which is why Bevy's derive
+requires the collection field to stay private.
+
+### The open question a reader will hit first
+
+A Bevy `Relationship` is one-to-many: an entity may point at **at most one**
+entity through a given relationship component. So a node carries one
+`DependsOn`, and the graph as sketched expresses fan-out -- one cell feeding
+many dependents -- but not fan-in.
+
+Fan-in is not optional for this library. `lift`, `merge` and `snapshot` are all
+nodes with two or more inputs, so the sketch does not yet reach Sodium's core
+combinators. The ways out are known and none is obviously right: several
+distinct relationship types (`DependsOnLeft` / `DependsOnRight`), an entity per
+edge rather than per dependency, or a collection component that gives up the
+relationship machinery and its hooks.
+
+That choice is not made yet, and it is precisely the shape of decision this
+repository records rather than leaves in the code. Anyone picking it is writing
+`0002` before writing the type. The same goes for the rest of the port: Sodium's
+semantics come from outside and are not ours to choose, but how they are spelled
+against an ECS is entirely ours, and the spelling is where the reasoning lives.
+
+Both types are currently private, so the crate exports nothing and `cargo build`
+reports two `dead_code` warnings. That is the honest state of a sketch, not a
+defect to paper over with `pub`.
+
 ## Conventions
 
 ### Conventions have an owner
@@ -10,9 +83,12 @@ code in this repository.
 Every convention in this repository is owned by one document, and the rest are
 restatements. The ADR rules are owned by
 [`docs/decisions/README.md`](docs/decisions/README.md); what appears here and in
-[`CONTRIBUTING.md`](CONTRIBUTING.md) restates it. Change the owner first, then
-every restatement. A restatement that has fallen behind is worse than none,
-because it is read with the same confidence as the owner.
+[`CONTRIBUTING.md`](CONTRIBUTING.md) restates it. `CONTRIBUTING.md` owns the
+rest: the checks a change has to pass and the rule about writing only the
+source-of-truth half of a relationship pair, both of which the *Commands* and
+*Architecture* sections above restate at an agent's level of detail. Change the
+owner first, then every restatement. A restatement that has fallen behind is
+worse than none, because it is read with the same confidence as the owner.
 
 Anything normative -- a convention, a gate, a process, anything that changes
 what someone does -- has to reach `CONTRIBUTING.md`. Write it there for a human
