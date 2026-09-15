@@ -140,9 +140,11 @@ implementation does not match them is reporting a bug against a specification
 rather than arguing for a design.
 
 That record **does** bring a test, because the objection to the others does not
-apply to it: the test is written against the specification, not against the
-internals the record wants to replace, so it is already correct on the day the
-gap closes. Put it in `src/tests.rs`, never in `experiments/`, write it as the
+apply to it: the test is written against the specification -- which is in the
+tree at
+[`docs/reference/sodium/denotational-semantics.md`](docs/reference/sodium/denotational-semantics.md),
+so cite the section it misses -- not against the internals the record wants to
+replace, so it is already correct on the day the gap closes. Put it in `src/tests.rs`, never in `experiments/`, write it as the
 behaviour the library *ought* to have so that it fails, and mark it:
 
 ```rust
