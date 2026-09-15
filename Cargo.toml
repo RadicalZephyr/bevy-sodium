@@ -2,7 +2,14 @@
 name = "bevy-sodium"
 version = "0.1.0"
 edition = "2024"
+authors = ["Zefira Shannon <zefira@hey.com>"]
 license = "BSD-3-Clause"
+description = "A conceptual port of the Sodium functional reactive programming library to Bevy, with the FRP dependency graph modelled as ECS entities and relationships"
+repository = "https://github.com/RadicalZephyr/bevy-sodium"
+readme = "README.md"
+keywords = ["frp", "reactive", "bevy", "ecs", "sodium"]
+categories = ["game-development", "asynchronous"]
+rust-version = "1.95.0"
 
 [workspace]
 members = ["docs/decisions/experiments"]
